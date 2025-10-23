@@ -5,7 +5,7 @@ R='\033[1;91m'
 V='\033[1;92m'
 B='\033[1;97m'
 S='\033[0m'
-C='\033[36m'
+C='\033[96m'
 v='\033[7;92m'
 r='\033[7;91m'
 c='\033[7;96m'
@@ -130,7 +130,8 @@ def step2(cookie,uid,DTSG,LSD):
         rp1=requests.post(url,data=data,headers=head).json()
         if "FXCALSettingsMutationReturnDataSuccessWithNodeConfig" in str(rp1):
             return {"status":"success"}
-        c
+        else:
+        	return {"status":"fail","message":"Please re-link Your Instagram Account"} 
     except requests.exceptions.ConnectionError:
         return {"status":"fail","message":"Connection Error"}
     except Exception as e:
@@ -164,15 +165,20 @@ def step3(cookie,uid,DTSG,LSD,fbid_v2):
         "doc_id": "9253258021410000",
         "av": uid,
         "variables":json.dumps(variable)}
-        url=f"https://accountscenter.facebook.com/api/graphql"
+        url="https://accountscenter.facebook.com/api/graphql"
         rq1=requests.post(url,data=data,headers=head)
         rp1=json.loads(rq1.text)
-        if "(Facebook)" and "(Instagram)" in str(rp1):
-            return {"status":"success"}
-        elif "FXCALSettingsMutationErrorRequiresReauth" in str(rp1):
+        if "FXCALSettingsMutationErrorRequiresReauth" in str(rp1):
             return {"status":"fail","message":"Please re-link Your Instagram Account"}
         else:
-            {"status":"fail","message":"An unknow error was occured"}
+        	if "connecter" in str(rp1):
+        		sso_list = rp1["data"]["fxcal_settings_update_sso_status"]["updated_node"]["advanced_sso_settings"]["sso_status"]
+        		if "Peut se connecter à" in str(sso_list[0]):
+        			return {"status":"success"}
+        		else:
+        			return {"status":"fail","message":"Failed to synchronise Facebook to Insta"}
+        	else:
+        		return {"status":"fail","message":"An unknow error was occured"}
     except requests.exceptions.ConnectionError:
         return {"status":"fail","message":"Connection Error"}
     except Exception as e:
@@ -195,7 +201,7 @@ def step4(cookie,uid,DTSG,LSD,fbid_v2):
         "Upgrade-Insecure-Requests": "1",
         "Cache-Control": "max-age=0",
         "Sec-Fetch-User": "?1"}
-        variable = {"input": {"client_mutation_id": "1","actor_id": uid,"enable_sso": False,"initiator_account": {"id": uid,"type": "FACEBOOK"},"target_account": {"id": fbid_v2,"type": "INSTAGRAM"},"fdid": "device_id_fetch_datr"}}
+        variable = {"input": {"client_mutation_id": "1","actor_id": uid,"enable_sso": True,"initiator_account": {"id": fbid_v2,"type": "INSTAGRAM"},"target_account": {"id": uid,"type": "FACEBOOK"},"fdid": "device_id_fetch_datr"}}
         data = {
         "__user": uid,
         "fb_dtsg": DTSG,
@@ -209,12 +215,17 @@ def step4(cookie,uid,DTSG,LSD,fbid_v2):
         url="https://accountscenter.facebook.com/api/graphql"
         rq1=requests.post(url,data=data,headers=head)
         rp1=json.loads(rq1.text)
-        if "(Facebook)" in str(rp1):
-            return {"status":"success"}
-        elif "FXCALSettingsMutationErrorRequiresReauth" in str(rp1):
-            return {"status":"fail","message":"Please re-link Your Instagram Account"}
+        if "FXCALSettingsMutationErrorRequiresReauth" in str(rp1):
+        	return {"status":"fail","message":"Please re-link Your Facebook Account"}
         else:
-            return {"status":"fail","message":"An unknow error was occured"}
+            if "connecter" in str(rp1):
+            	sso_list = rp1["data"]["fxcal_settings_update_sso_status"]["updated_node"]["advanced_sso_settings"]["sso_status"]
+            	if "Peut se connecter à" in str(sso_list[1]):
+            		return {"status":"success"}
+            	else:
+            		return {"status":"fail","message":"Failed to synchronise Instagram to Facebook"}
+            else:
+            	return {"status":"fail","message":"An unknow error was occured"}       
     except requests.exceptions.ConnectionError:
         return {"status":"fail","message":"Connection Error"}
     except Exception as e:
@@ -302,7 +313,6 @@ def step6(cookie,uid,DTSG,LSD,fbid_v2,name):
         url="https://accountscenter.facebook.com/api/graphql"
         rq1=requests.post(url,data=data,headers=head)
         rp1=json.loads(rq1.text)
-        print(rp1)
         if name in str(rp1):
             return {"status":"success"}
         elif "FXCALSettingsMutationErrorRequiresReauth" in str(rp1):
@@ -373,26 +383,36 @@ def main():
         else:
             print(f"{B}[{R}+{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
             exit()
-    print(f"{B}[+]Modification de vos parametre Facebook...{S}    ")
+    print(f"{B}[+]Synchronisation de votre compte Fb vers Insta...{S}    ")
     s3=step3(cookie=cookie,uid=uid,DTSG=DTSG,LSD=LSD,fbid_v2=fbid_v2)
     if "success" in s3['status']:pass
     elif "fail" in s3["status"]:
         if "Please re-link Your Instagram Account" in s3["message"]:
             print(f"{B}[{R}x{B}]Veuillez relier de nouveau votre compte instagram{S}       ")
+            print(f"{B}[{R}!{B}]Ouvrer ce lien dans via browser{S}         ")
+            print(f"{C}https://accountscenter.facebook.com/connected_experiences/single_sign_on_dialog/{S}")
             exit()
+        elif "Failed to synchronise Facebook to Insta" in s3["message"]:
+        	print(f"{B}[{R}x{B}]Echèc de la synchronisation{S}      ")
+        	exit()
         elif "Connection Error" in s3["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
         else:
             print(f"{B}[{R}+{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
             exit()
-    print(f"{B}[+]Modification de vos parametre Instagram...{S}    ")
+    print(f"{B}[+]Synchronisation de votre compte Insta vers Fb...{S}    ")
     s4=step4(cookie=cookie,uid=uid,DTSG=DTSG,LSD=LSD,fbid_v2=fbid_v2)
     if "success" in s4['status']:pass
-    elif "fail" in s4["message"]:
-        if "Please re-link Your Instagram Account" in s3["message"]:
-            print(f"{B}[{R}x{B}]Veuillez relier de nouveau votre compte instagram{S}       ")
+    elif "fail" in s4["status"]:
+        if "Please re-link Your Facebook Account" in s4["message"]:
+            print(f"{B}[{R}x{B}]Veuillez relier de nouveau votre compte Facebook{S}       ")
+            print(f"{B}[{R}!{B}]Ouvrer ce lien dans via browser{S}         ")
+            print(f"{C}https://accountscenter.facebook.com/connected_experiences/single_sign_on_dialog/{S}")
             exit()
+        elif "Failed to synchronise Instagram to Facebook" in s4["message"]:
+        	print(f"{B}[{R}x{B}]Echèc de la synchronisation{S}      ")
+        	exit()
         elif "Connection Error" in s4["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
@@ -423,7 +443,7 @@ def main():
         else:
             print(f"{B}[{R}+{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
             exit()
-    print(f"{B}[+]synchronisation de votre nom sur Facebook...{S}        ")
+    print(f"{B}[+]Synchronisation de votre nom sur Facebook...{S}        ")
     s6=step6(cookie=cookie,uid=uid,DTSG=DTSG,LSD=LSD,fbid_v2=fbid_v2,name=name)
     if "success" in s6["status"]:
         print(f"{v}Votre Nom a été changé avec succès{S}          ")
