@@ -302,6 +302,7 @@ def step6(cookie,uid,DTSG,LSD,fbid_v2,name):
         url="https://accountscenter.facebook.com/api/graphql"
         rq1=requests.post(url,data=data,headers=head)
         rp1=json.loads(rq1.text)
+        print(rp1)
         if name in str(rp1):
             return {"status":"success"}
         elif "FXCALSettingsMutationErrorRequiresReauth" in str(rp1):
@@ -354,7 +355,7 @@ def main():
         if "Cookie Invalid or Expired" in s1["message"]:
             print(f"{B}[{R}x{B}]Votre Cookie est invalid ou expirer{S}        ")
             exit()
-        elif "Connection Error" in check["message"]:
+        elif "Connection Error" in s1["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
         else:
@@ -366,7 +367,7 @@ def main():
         if "An unknow error was occured" in s2["message"]:
             print(f"{B}[{R}x{B}]Une erreur inconnue est survenue{S}      ")
             exit()
-        elif "Connection Error" in check["message"]:
+        elif "Connection Error" in s2["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
         else:
@@ -379,7 +380,7 @@ def main():
         if "Please re-link Your Instagram Account" in s3["message"]:
             print(f"{B}[{R}x{B}]Veuillez relier de nouveau votre compte instagram{S}       ")
             exit()
-        elif "Connection Error" in check["message"]:
+        elif "Connection Error" in s3["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
         else:
@@ -392,7 +393,7 @@ def main():
         if "Please re-link Your Instagram Account" in s3["message"]:
             print(f"{B}[{R}x{B}]Veuillez relier de nouveau votre compte instagram{S}       ")
             exit()
-        elif "Connection Error" in check["message"]:
+        elif "Connection Error" in s4["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
         else:
@@ -413,10 +414,10 @@ def main():
         if "Sorry We can't change your name, please try again later" in s5["message"]:
             print(f"{B}[{R}x{B}]Vous ne pouvez pas encore changer votre nom actuellement{S}    ")
             exit()
-        if "Please re-link Your Instagram Account" in s3["message"]:
+        if "Please re-link Your Instagram Account" in s5["message"]:
             print(f"{B}[{R}x{B}]Veuillez relier de nouveau votre compte instagram{S}       ")
             exit()
-        elif "Connection Error" in check["message"]:
+        elif "Connection Error" in s5["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
         else:
@@ -429,13 +430,13 @@ def main():
         print(f"{B}[{V}✓{B}]Votre nom actuel est: {name}")
         exit()
     elif "fail" in s6["status"]:
-        if "Sorry We can't change your name, please try again later" in s5["message"]:
+        if "Sorry We can't change your name, please try again later" in s6["message"]:
             print(f"{B}[{R}x{B}]Vous ne pouvez pas encore changer votre nom actuellement{S}    ")
             exit()
-        if "Please re-link Your Instagram Account" in s3["message"]:
+        if "Please re-link Your Instagram Account" in s6["message"]:
             print(f"{B}[{R}x{B}]Veuillez relier de nouveau votre compte instagram{S}       ")
             exit()
-        elif "Connection Error" in check["message"]:
+        elif "Connection Error" in s6["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
         else:
