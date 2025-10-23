@@ -49,7 +49,6 @@ def checking(cookie):
         url="https://accountscenter.facebook.com/profiles"
         rq1=requests.get(url,headers=head,allow_redirects=True)
         rp1=rq1.text.replace("\\","")
-        open("/sdcard/page.html","w").write(str(rp1))
         final_url=rq1.url
         if final_url=="https://accountscenter.facebook.com/profiles":
             pass
@@ -131,8 +130,7 @@ def step2(cookie,uid,DTSG,LSD):
         rp1=requests.post(url,data=data,headers=head).json()
         if "FXCALSettingsMutationReturnDataSuccessWithNodeConfig" in str(rp1):
             return {"status":"success"}
-        else:
-            {"status":"fail","message":"An unknow error was occured"}
+        c
     except requests.exceptions.ConnectionError:
         return {"status":"fail","message":"Connection Error"}
     except Exception as e:
@@ -215,6 +213,8 @@ def step4(cookie,uid,DTSG,LSD,fbid_v2):
             return {"status":"success"}
         elif "FXCALSettingsMutationErrorRequiresReauth" in str(rp1):
             return {"status":"fail","message":"Please re-link Your Instagram Account"}
+        else:
+            return {"status":"fail","message":"An unknow error was occured"}
     except requests.exceptions.ConnectionError:
         return {"status":"fail","message":"Connection Error"}
     except Exception as e:
@@ -265,6 +265,8 @@ def step5(cookie,uid,DTSG,LSD,fbid_v2,name):
             return {"status":"fail","message":"Sorry We can't change your name, please try again later"}
         elif "FXCALSettingsMutationErrorRequiresReauth" in str(rp1):
             return {"status":"fail","message":"Please re-link Your Instagram Account"}
+        else:
+            return {"status":"fail","message":"An unknow error was occured"}
     except requests.exceptions.ConnectionError:
         return {"status":"fail","message":"Connection Error"}
     except Exception as e:
@@ -306,6 +308,8 @@ def step6(cookie,uid,DTSG,LSD,fbid_v2,name):
             return {"status":"fail","message":"Please re-link Your Instagram Account"}
         elif "Veuillez réessayer plus tard." in str(rp1):
             return {"status":"fail","message":"Sorry We can't change your name, please try again later"}
+        else:
+            return {"status":"fail","message":"An unknow error was occured"}
     except requests.exceptions.ConnectionError:
         return {"status":"fail","message":"Connection Error"}
     except Exception as e:
@@ -336,6 +340,9 @@ def main():
         elif "Connection Error" in check["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
+        else:
+            print(f"{B}[{R}x{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
+            exit()
     print(f"{B}[{V}✓{B}]Votre cookie est active...{S}      ")
     print(f"{B}[+]Obtention de vos jeton de connexion ...{S}      ")
     s1=step1(cookie=cookie,uid=uid)
@@ -350,6 +357,9 @@ def main():
         elif "Connection Error" in check["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
+        else:
+            print(f"{B}[{R}x{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
+            exit()
     s2=step2(cookie=cookie,uid=uid,DTSG=DTSG,LSD=LSD)
     if "success" in s2["status"]:pass
     elif "fail" in s2["status"]:
@@ -358,6 +368,9 @@ def main():
             exit()
         elif "Connection Error" in check["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
+            exit()
+        else:
+            print(f"{B}[{R}+{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
             exit()
     print(f"{B}[+]Modification de vos parametre Facebook...{S}    ")
     s3=step3(cookie=cookie,uid=uid,DTSG=DTSG,LSD=LSD,fbid_v2=fbid_v2)
@@ -369,6 +382,9 @@ def main():
         elif "Connection Error" in check["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
+        else:
+            print(f"{B}[{R}+{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
+            exit()
     print(f"{B}[+]Modification de vos parametre Instagram...{S}    ")
     s4=step4(cookie=cookie,uid=uid,DTSG=DTSG,LSD=LSD,fbid_v2=fbid_v2)
     if "success" in s4['status']:pass
@@ -378,6 +394,9 @@ def main():
             exit()
         elif "Connection Error" in check["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
+            exit()
+        else:
+            print(f"{B}[{R}+{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
             exit()
     while True:
         name=input(f"{B}({V}+{B})Entrer le nom avec emojie: {C}")
@@ -400,6 +419,9 @@ def main():
         elif "Connection Error" in check["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
             exit()
+        else:
+            print(f"{B}[{R}+{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
+            exit()
     print(f"{B}[+]synchronisation de votre nom sur Facebook...{S}        ")
     s6=step6(cookie=cookie,uid=uid,DTSG=DTSG,LSD=LSD,fbid_v2=fbid_v2,name=name)
     if "success" in s6["status"]:
@@ -415,6 +437,9 @@ def main():
             exit()
         elif "Connection Error" in check["message"]:
             print(f"{B}[{R}x{B}]Pas de connexion internet{S}        ")
+            exit()
+        else:
+            print(f"{B}[{R}+{B}]Une erreur inconnue est arriver,veuiller réessayer{S}    ")
             exit()
 
 if __name__=="__main__":
