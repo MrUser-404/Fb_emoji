@@ -117,6 +117,7 @@ def step2(cookie,uid,DTSG,LSD):
         "Sec-Fetch-User": "?1"}
         variable = {"input": {"client_mutation_id": "1","actor_id": uid,"enable_share_all_logins": False,"fdid": "device_id_fetch_datr"}}
         data = {
+        "locale":"fr_FR",
         "__user": uid,
         "fb_dtsg": DTSG,
         "lsd": LSD,
@@ -156,6 +157,7 @@ def step3(cookie,uid,DTSG,LSD,fbid_v2):
         "Sec-Fetch-User": "?1"}
         variable = {"input": {"client_mutation_id": "1","actor_id": uid,"enable_sso": True,"initiator_account": {"id": uid,"type": "FACEBOOK"},"target_account": {"id": fbid_v2,"type": "INSTAGRAM"},"fdid": "device_id_fetch_datr"}}
         data = {
+        "locale":"fr_FR",
         "__user": uid,
         "fb_dtsg": DTSG,
         "lsd": LSD,
@@ -203,6 +205,7 @@ def step4(cookie,uid,DTSG,LSD,fbid_v2):
         "Sec-Fetch-User": "?1"}
         variable = {"input": {"client_mutation_id": "1","actor_id": uid,"enable_sso": True,"initiator_account": {"id": fbid_v2,"type": "INSTAGRAM"},"target_account": {"id": uid,"type": "FACEBOOK"},"fdid": "device_id_fetch_datr"}}
         data = {
+        "locale":"fr_FR",
         "__user": uid,
         "fb_dtsg": DTSG,
         "lsd": LSD,
@@ -258,6 +261,7 @@ def step5(cookie,uid,DTSG,LSD,fbid_v2,name):
         "last_name": "",
         "interface": "FB_WEB"}
         data = {
+        "locale":"fr_FR",
         "fb_api_caller_class": "RelayModern",
         "fb_dtsg": DTSG,
         "lsd": LSD,
@@ -302,6 +306,7 @@ def step6(cookie,uid,DTSG,LSD,fbid_v2,name):
         "Sec-Fetch-User": "?1"}
         variable = {"client_mutation_id": str(uuid.uuid4()),"accounts_to_sync": [fbid_v2,uid],"resources_to_sync": ["NAME","PROFILE_PHOTO"],"resources_to_unsync": None,"scale": 3,"source_of_truth_array": [{"resource_source": "IG"},{"resource_source": "FB"}],"source_account": uid,"family_device_id": "device_id_fetch_datr","username_unsync_params": None,"platform": "FACEBOOK","sync_logging_params": {"client_flow_type": "IM_SETTINGS"},"interface": "FB_WEB","feta_profile_sync": False}
         data = {
+        "locale":"fr_FR",
         "fb_dtsg": DTSG,
         "__user": uid,
         "variables": json.dumps(variable),        
